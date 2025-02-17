@@ -135,7 +135,8 @@ ML_SETTINGS = {
     'BATCH_SIZE': 32,
     'TOP_K': 5,
     'DEFAULT_MODEL': 'clip',
-    'HF_API_TOKEN': None
+    'HF_API_TOKEN': None,
+    'VECTORSTORE': 'faiss'
 }
 
 DATASET_SETTINGS = {

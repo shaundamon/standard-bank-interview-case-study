@@ -41,15 +41,19 @@ class CLIPModelHandler:
         text_features = text_features / np.linalg.norm(text_features, axis=1, keepdims=True)
         return torch.from_numpy(text_features)
 
-
     def encode_image(self, images: list) -> torch.Tensor:
+        # If images are file paths, convert them to PIL images. 
+        # This is because of the different vectorstore, so if a new vectorestore is linked, 
+        # it will pass the image paths as a list
+        if isinstance(images[0], str):
+            images = [Image.open(img_path).convert("RGB")
+                      for img_path in images]
+            
         inputs = self.processor(images=images, return_tensors="pt")
-        inputs = {k: v.to(self.device) for k, v in inputs.items()}
-        
+        inputs = {key: tensor.to(self.device)
+                  for key, tensor in inputs.items()}
+        # Get image features and normalize.
         with torch.no_grad():
-            image_features = self.model.get_image_features(**inputs)
-        
-        # Normalize features
-        image_features = image_features.cpu().numpy()
-        image_features = image_features / np.linalg.norm(image_features, axis=1, keepdims=True)
-        return torch.from_numpy(image_features)
+            outputs = self.model.get_image_features(**inputs)
+        outputs = outputs / outputs.norm(dim=-1, keepdim=True)
+        return outputs

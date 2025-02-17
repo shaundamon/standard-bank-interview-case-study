@@ -9,10 +9,8 @@ from django.http import FileResponse
 from rest_framework.views import APIView
 from rest_framework.response import Response
 
-from ml.models.clip import get_clip_model
-from ml.models.embeddings.store import EmbeddingStore
+from ml.models.factory import ModelFactory
 from rest_framework.permissions import AllowAny
-from ml.data.dataset import DatasetManager
 
 logger = logging.getLogger(__name__)
 
@@ -23,12 +21,27 @@ class ImageSearchView(APIView):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.clip_model = get_clip_model()
-        self.embedding_store = EmbeddingStore(
-            settings.BASE_DIR / "data" / "embeddings"
-        )
-        logger.info(
-            "ImageSearchView initialized with CLIP model and embedding store")
+        # Read the default model from settings and obtain its configuration.
+        default_model_key = settings.ML_SETTINGS.get('DEFAULT_MODEL', 'clip')
+        model_config = settings.ML_SETTINGS['MODELS'][default_model_key]
+        self.model_handler = ModelFactory.create_model(
+            default_model_key, model_config)
+        logger.info(f"ImageSearchView using model: {default_model_key}")
+
+        # Choose vector store according to settings.
+        if settings.ML_SETTINGS.get('VECTORSTORE', 'numpy') == 'faiss':
+            from ml.models.vectorstores.faiss_store import FaissVectorStore
+            self.vectorstore = FaissVectorStore(
+                dimension=model_config['embedding_dim'],
+                store_dir=settings.BASE_DIR / "data" / "faiss_store",
+                model_handler=self.model_handler 
+            )
+            logger.info("Using FAISS vector store for similarity search")
+        else:
+            from ml.models.embeddings.store import EmbeddingStore
+            self.vectorstore = EmbeddingStore(
+                settings.BASE_DIR / "data" / "embeddings")
+            logger.info("Using Numpy-based embedding store for similarity search")
 
     def preprocess_query(self, query: str) -> list:
         """Enhance query with descriptive context."""
@@ -55,12 +68,12 @@ class ImageSearchView(APIView):
                     status=status.HTTP_400_BAD_REQUEST
                 )
 
-            # Process query templates and encode them.
+            # Process query templates and encode 
             query_templates = self.preprocess_query(query)
             all_embeddings = []
             for template in query_templates:
                 logger.debug(f"Encoding template: {template}")
-                embedding = self.clip_model.encode_text(template)
+                embedding = self.model_handler.encode_text(template)
                 all_embeddings.append(embedding)
 
             # Average the embeddings and re-normalize.
@@ -68,7 +81,7 @@ class ImageSearchView(APIView):
             query_embedding = query_embedding / torch.norm(query_embedding)
 
             logger.info("Searching for similar images...")
-            results = self.embedding_store.search(
+            results = self.vectorstore.search(
                 query_embedding,
                 top_k=settings.ML_SETTINGS['TOP_K'],
                 threshold=0.0
