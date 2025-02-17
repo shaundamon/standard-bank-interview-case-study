@@ -48,6 +48,10 @@ class EmbeddingStore:
         embeddings_np = embeddings.squeeze().numpy()
         if len(embeddings_np.shape) == 1:
             embeddings_np = embeddings_np.reshape(1, -1)
+        
+        # normalize before storing
+        embeddings_np = embeddings_np / \
+            np.linalg.norm(embeddings_np, axis=1, keepdims=True)
 
         if self.embeddings.size == 0:
             self.embeddings = embeddings_np
@@ -56,38 +60,63 @@ class EmbeddingStore:
 
         # Update metadata
         for idx, path in enumerate(image_paths):
-            self.metadata[str(len(self.metadata) + idx)] = {
+            current_idx = str(idx)  
+            self.metadata[current_idx] = {
                 "path": str(path),
-                "index": len(self.metadata) + idx
+                "index": idx
             }
 
         self._save_store()
 
-    def search(self, query_embedding: torch.Tensor, top_k: int = 5) -> List[Dict]:
+    def search(self, query_embedding: torch.Tensor, top_k: int = 5, threshold: float = 0.0) -> List[Dict]:
+        """
+        Retrieve the top_k images whose embeddings are most similar to the query embedding.
+
+        Args:
+            query_embedding: Text embedding from your model (should be normalized,
+                             but we add an explicit check).
+            top_k: Number of top results to return.
+            threshold: Minimal similarity score to include a result.
+                       Setting this to 0.0 will simply return the top_k.
+        Returns:
+            A list of dictionaries each containing image path and similarity score.
+        """
         if self.embeddings.size == 0:
+            logger.warning("Empty embedding store - no images to search")
             return []
 
-        # Convert query embedding to numpy and ensure it's normalized
-        query_np = query_embedding.squeeze().numpy()
-        if len(query_np.shape) == 1:
-            query_np = query_np.reshape(1, -1)
-        
-        query_np = query_np / np.linalg.norm(query_np, axis=1, keepdims=True)
-        
+        logger.debug(
+            f"Searching through {self.embeddings.shape[0]} embeddings")
+
+        # Squeeze and reshape query embedding to (1, -1) and normalize.
+        query_np = query_embedding.squeeze().numpy().reshape(1, -1)
+        query_norm = np.linalg.norm(query_np, axis=1, keepdims=True)
+        if (query_norm == 0).any():
+            logger.error("Query embedding norm is zero!")
+            return []
+        query_np = query_np / query_norm
+
+        # enforce or ensure embeddings are 2D and normalize.
         embeddings_2d = self.embeddings.reshape(self.embeddings.shape[0], -1)
-        embeddings_2d = embeddings_2d / np.linalg.norm(embeddings_2d, axis=1, keepdims=True)
-        
-        # Calculate similarities using dot product of normalized vectors
-        similarities = (query_np @ embeddings_2d.T)[0]
-        top_indices = np.argsort(similarities)[-top_k:][::-1]
+        embeddings_norm = np.linalg.norm(embeddings_2d, axis=1, keepdims=True)
+        embeddings_2d = embeddings_2d / embeddings_norm
+
+        # Calculate cosine similarity 
+        similarities = cosine_similarity(query_np, embeddings_2d)[0]
+        sorted_indices = np.argsort(similarities)[::-1]
 
         results = []
-        for idx in top_indices:
-            results.append({
-                "path": self.metadata[str(idx)]["path"],
-                "similarity": float(similarities[idx])
-            })
+        for idx in sorted_indices:
+            if similarities[idx] >= threshold:
+                results.append({
+                    "path": self.metadata[str(idx)]["path"],
+                    "similarity": float(similarities[idx])
+                })
+            if len(results) >= top_k:
+                break
 
+        logger.info(
+            f"Found {len(results)} results above threshold {threshold}")
         return results
 
     def _save_store(self) -> None:

@@ -6,7 +6,7 @@ import torch
 
 @dataclass
 class CLIPConfig:
-    model_name: str = "openai/clip-vit-base-patch32"
+    model_name: str = "ViT-L/14"
     embedding_dim: int = 512
     batch_size: int = 32
     device: str = "cuda" if torch.cuda.is_available() else "cpu"

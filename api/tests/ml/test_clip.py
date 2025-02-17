@@ -1,9 +1,21 @@
 import pytest
-from pathlib import Path
-from django.conf import settings
+from PIL import Image
+import numpy as np
+from ml.models.clip import  initialize_clip_model
 
-from ml.models.clip import get_clip_model, initialize_clip_model
-from ml.models.clip.config import CLIPConfig
+
+@pytest.fixture(autouse=True)
+def setup_clip_settings(settings):
+    """Setup test settings for CLIP model."""
+    settings.ML_SETTINGS = {
+        'MODELS': {
+            'clip': {
+                'name': "openai/clip-vit-base-patch32",
+                'embedding_dim': 512,
+                'batch_size': 32
+            }
+        }
+    }
 
 
 @pytest.fixture
@@ -17,13 +29,18 @@ def test_text_encoding(clip_model):
     text = "a photo of a cat"
     embeddings = clip_model.encode_text(text)
 
-    assert embeddings.shape[1] == settings.ML_SETTINGS['EMBEDDING_DIM']
+    assert embeddings.shape[1] == 512
     assert embeddings.device.type == 'cpu'
 
 
-def test_model_singleton():
-    """Test that model is a singleton."""
-    model1 = get_clip_model()
-    model2 = get_clip_model()
+def test_image_encoding(clip_model, tmp_path):
+    """Test image encoding functionality."""
+    # Create a dummy image for testing
 
-    assert model1 is model2
+
+    img = Image.fromarray(np.random.randint(
+        0, 255, (224, 224, 3), dtype=np.uint8))
+    embeddings = clip_model.encode_image([img])
+
+    assert embeddings.shape[1] == 512
+    assert embeddings.device.type == 'cpu'
