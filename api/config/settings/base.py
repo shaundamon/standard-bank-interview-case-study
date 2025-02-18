@@ -24,7 +24,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'corsheaders',
-    'api',
+    'drf_yasg',
+    'v1.ai_engine.apps.ApiConfig',
     'ml.apps.MLConfig',
 ]
 

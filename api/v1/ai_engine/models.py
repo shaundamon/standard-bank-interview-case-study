@@ -40,3 +40,4 @@ class ImageInteraction(models.Model):
         indexes = [
             models.Index(fields=['search', 'rank_position']),
         ]
+    
