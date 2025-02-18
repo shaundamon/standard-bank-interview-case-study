@@ -73,11 +73,11 @@ cd standard-bank-interview-case-study
 3. Set up the frontend (see [Frontend Setup](webapp/README.md))
 
 ## Architecture Overview
-![User Journey - High Lever](media\assets\image.png)
+![User Journey - High Lever](media/assets/image.png)
 
-![User Journey - High Lever](media\assets\image2.png)
+![User Journey - High Lever](media/assets/image2.png)
 
-![User Journey - High Lever](media\assets\image3.png)
+![User Journey - High Lever](media/assets/image3.png)
 
 ## API Documentation
 Once the backend is running, visit:
