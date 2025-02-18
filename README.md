@@ -73,18 +73,11 @@ cd standard-bank-interview-case-study
 3. Set up the frontend (see [Frontend Setup](webapp/README.md))
 
 ## Architecture Overview
+![User Journey - High Lever](media\assets\image.png)
 
-### Backend
-- Django REST Framework for API endpoints
-- CLIP and BLIP2 models for image-text similarity
-- Efficient embedding storage system
-- Scalable image processing pipeline
+![User Journey - High Lever](media\assets\image2.png)
 
-### Frontend
-- React with Vite for fast development
-- TypeScript for type safety
-- TailwindCSS for styling
-- React Query for state management
+![User Journey - High Lever](media\assets\image3.png)
 
 ## API Documentation
 Once the backend is running, visit:
