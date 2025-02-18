@@ -8,4 +8,7 @@ class MLConfig(AppConfig):
     def ready(self):
         """Initialize ML models when Django starts."""
         from .models.clip import initialize_clip_model
+        from .models.blip2 import initialize_blip2_model
+        
         initialize_clip_model()
+        initialize_blip2_model()

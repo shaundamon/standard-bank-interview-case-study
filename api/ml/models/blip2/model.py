@@ -19,44 +19,81 @@ class BLIP2ModelHandler(BaseModelHandler):
         self.headers = {"Authorization": f"Bearer {config.api_token}"}
         logger.info("BLIP2 model initialized with API access")
 
+
     def encode_text(self, text: str) -> torch.Tensor:
-        response = requests.post(
-            self.api_url,
-            headers=self.headers,
-            json={
-                "inputs": text,
-                "task": "feature-extraction",
-                "options": {"wait_for_model": True}
-            }
-        )
+        try:
+            response = requests.post(
+                self.api_url,
+                headers=self.headers,
+                json={
+                    "inputs": text,
+                    "task": "feature-extraction",
+                    "options": {"wait_for_model": True}
+                },
+            )
 
-        if response.status_code != 200:
-            raise RuntimeError(f"API request failed: {response.text}")
+            if response.status_code == 503:
+                logger.error(
+                    "Model is loading. Please try again in a few minutes.")
+                raise RuntimeError(
+                    "Model is still loading on Hugging Face servers")
+            elif response.status_code != 200:
+                logger.error(
+                    f"API request failed with status {response.status_code}: {response.text}")
+                raise RuntimeError(f"API request failed: {response.text}")
 
-        features = np.array(response.json())
-        if isinstance(features, dict):
-            raise RuntimeError(f"Unexpected API response: {features}")
+            features = np.array(response.json())
+            if isinstance(features, dict):
+                logger.error(f"Unexpected API response format: {features}")
+                raise RuntimeError(f"Unexpected API response: {features}")
 
-        features = features.squeeze()
-        features = features / np.linalg.norm(features, axis=-1, keepdims=True)
-        return torch.from_numpy(features)
+            features = features.squeeze()
+            features = features / np.linalg.norm(features, axis=-1, keepdims=True)
+            return torch.from_numpy(features)
+
+        except requests.Timeout:
+            logger.error("Request to Hugging Face API timed out after 30 seconds")
+            raise RuntimeError("BLIP2 API request timed out")
+        except Exception as e:
+            logger.error(f"Unexpected error during text encoding: {str(e)}")
+            raise
+
 
     def encode_image(self, images: Union[List[Image.Image], List[str]]) -> torch.Tensor:
-        if isinstance(images[0], str):
-            with open(images[0], "rb") as f:
-                image_bytes = f.read()
-        else:
-            # Convert PIL Image to bytes
-            image_bytes = images[0].tobytes()
+        try:
+            if isinstance(images[0], str):
+                with open(images[0], "rb") as f:
+                    image_bytes = f.read()
+            else:
+                image_bytes = images[0].tobytes()
 
-        response = requests.post(
-            self.api_url,
-            headers=self.headers,
-            data=image_bytes
-        )
-        features = np.array(response.json())
-        features = features / np.linalg.norm(features, axis=1, keepdims=True)
-        return torch.from_numpy(features)
+            response = requests.post(
+                self.api_url,
+                headers=self.headers,
+                data=image_bytes,
+                timeout=30  # 30 second timeout
+            )
+
+            if response.status_code == 503:
+                logger.error(
+                    "Model is loading. Please try again in a few minutes.")
+                raise RuntimeError(
+                    "Model is still loading on Hugging Face servers")
+            elif response.status_code != 200:
+                logger.error(
+                    f"API request failed with status {response.status_code}: {response.text}")
+                raise RuntimeError(f"API request failed: {response.text}")
+
+            features = np.array(response.json())
+            features = features / np.linalg.norm(features, axis=1, keepdims=True)
+            return torch.from_numpy(features)
+
+        except requests.Timeout:
+            logger.error("Request to Hugging Face API timed out after 30 seconds")
+            raise RuntimeError("BLIP2 API request timed out")
+        except Exception as e:
+            logger.error(f"Unexpected error during image encoding: {str(e)}")
+            raise
 
     @property
     def embedding_dim(self) -> int:
