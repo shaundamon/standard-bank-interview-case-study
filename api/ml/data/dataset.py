@@ -21,18 +21,18 @@ class DatasetManager:
     def download_dataset(self) -> None:
         """Download dataset from Kaggle."""
         try:
+            # Create dataset directory if it doesn't exist
+            self.dataset_path.parent.mkdir(parents=True, exist_ok=True)
+
+            # Remove existing dataset if any
+            if self.dataset_path.exists():
+                shutil.rmtree(self.dataset_path)
+
             # Download dataset using kagglehub
             kagglehub.login()
             dataset = kagglehub.get_kaggle_dataset(self.dataset_name)
             dataset.download(self.dataset_path)
-            
-            # Extract if downloaded as zip
-            zip_path = self.dataset_path / f"{self.dataset_name.split('/')[-1]}.zip"
-            if zip_path.exists():
-                with zipfile.ZipFile(zip_path, 'r') as zip_ref:
-                    zip_ref.extractall(self.dataset_path)
-                zip_path.unlink()  # Remove zip after extraction
-                
+
             logger.info(f"Dataset downloaded to {self.dataset_path}")
         except Exception as e:
             logger.error(f"Failed to download dataset: {str(e)}")

@@ -1,8 +1,5 @@
 import logging
 import numpy as np
-from pathlib import Path
-from typing import List, Union
-
 import torch
 from PIL import Image
 from transformers import CLIPProcessor, CLIPModel

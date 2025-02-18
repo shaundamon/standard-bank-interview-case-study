@@ -1,4 +1,14 @@
-.venv/
 .env
-
+*.pyc
+__pycache__/
 node_modules/
+dist/
+
+# Data directories
+api/data/
+data/
+**/data/images/
+
+# Environment variables
+.env
+.env.local

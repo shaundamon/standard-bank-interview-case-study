@@ -35,7 +35,17 @@ class FaissVectorStore:
             self._initialize_embeddings()
 
     def _load_store(self) -> None:
-        """Load the FAISS index and metadata from disk."""
+        """Load the FAISS index and metadata from disk.
+        
+        Loads the FAISS index from the index file and metadata from the metadata file.
+        If the index file exists, loads the existing index, otherwise creates a new one.
+        
+        Returns:
+            None
+            
+        Raises:
+            Warning: If metadata file cannot be loaded, creates empty metadata dict
+        """
         if self.index_file.exists():
             self.index = faiss.read_index(str(self.index_file))
             try:
@@ -50,7 +60,19 @@ class FaissVectorStore:
 
 
     def _initialize_embeddings(self) -> None:
-        """Initialize embeddings from dataset in batches."""
+        """Initialize embeddings from dataset in batches.
+        
+        Loads images from the dataset, generates embeddings using the model handler,
+        and adds them to the FAISS index with metadata.
+
+        The method processes images in batches of 32 to manage memory efficiently.
+        
+        Returns:
+            None
+            
+        Raises:
+            Warning: If no images are found in the dataset
+        """
         dataset = DatasetManager()
         image_paths = dataset.load_images()
         if not image_paths:

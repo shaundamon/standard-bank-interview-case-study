@@ -11,4 +11,4 @@ class MLConfig(AppConfig):
         from .models.blip2 import initialize_blip2_model
         
         initialize_clip_model()
-        initialize_blip2_model()
+        # initialize_blip2_model()

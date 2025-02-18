@@ -3,12 +3,35 @@ from django.urls import reverse
 from rest_framework import status
 import torch
 from unittest.mock import patch, MagicMock
+from django.test import override_settings
+
+# Mock ML settings for tests
+TEST_ML_SETTINGS = {
+    'DEFAULT_MODEL': 'clip',
+    'TOP_K': 5,
+    'MODELS': {
+        'clip': {
+            'name': 'clip',
+            'model_name': 'openai/clip-vit-base-patch32',
+            'embedding_dim': 512,
+            'batch_size': 32,
+            'api_token': None
+        }
+    }
+}
+
+
+@pytest.fixture(autouse=True)
+def mock_settings():
+    """Fixture to override specific settings for all tests."""
+    with override_settings(ML_SETTINGS=TEST_ML_SETTINGS):
+        yield
 
 
 @pytest.fixture
 def mock_clip_model():
     """Fixture for mocked CLIP model."""
-    with patch('api.v1.ai_engine.views.get_clip_model') as mock:
+    with patch('ml.models.factory.CLIPModelHandler') as mock:
         model = MagicMock()
         model.encode_text.return_value = torch.randn(1, 512)
         mock.return_value = model
@@ -17,8 +40,8 @@ def mock_clip_model():
 
 @pytest.fixture
 def mock_embedding_store():
-    """Fixture for mocked embedding store."""
-    with patch('api.v1.ai_engine.views.EmbeddingStore') as mock:
+    """Fixture for a mocked embedding store."""
+    with patch('ml.models.embeddings.numpy_store.EmbeddingStore') as mock:
         store = MagicMock()
         store.search.return_value = [
             {"path": "test1.jpg", "similarity": 0.8},
@@ -29,7 +52,7 @@ def mock_embedding_store():
 
 
 def test_search_endpoint_success(api_client, mock_clip_model, mock_embedding_store):
-    """Test successful image search."""
+    """Example test: successful image search."""
     url = reverse('image-search')
     data = {"query": "a photo of a dog"}
 
@@ -42,8 +65,8 @@ def test_search_endpoint_success(api_client, mock_clip_model, mock_embedding_sto
                for key in ["path", "similarity"])
 
 
-def test_search_endpoint_missing_query(api_client):
-    """Test search with missing query."""
+def test_search_endpoint_missing_query(api_client, mock_clip_model, mock_embedding_store):
+    """Example test: missing query parameter."""
     url = reverse('image-search')
     response = api_client.post(url, {}, format='json')
 
@@ -51,8 +74,8 @@ def test_search_endpoint_missing_query(api_client):
     assert 'error' in response.data
 
 
-def test_search_endpoint_model_error(api_client, mock_clip_model):
-    """Test search when model fails."""
+def test_search_endpoint_model_error(api_client, mock_clip_model, mock_embedding_store):
+    """Example test: handle model error."""
     url = reverse('image-search')
     mock_clip_model.encode_text.side_effect = Exception("Model error")
 

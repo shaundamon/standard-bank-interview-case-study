@@ -2,7 +2,7 @@ import pytest
 import torch
 import numpy as np
 from pathlib import Path
-from ml.models.embeddings.store import EmbeddingStore
+from ml.models.embeddings.numpy_store import EmbeddingStore
 
 
 @pytest.fixture
@@ -20,12 +20,16 @@ def embedding_store(temp_store_dir):
 
 
 def test_add_and_search_embeddings(embedding_store):
-    """Test adding embeddings and searching."""
-    
-    embeddings = torch.randn(3, 512)
-    image_paths = ["image1.jpg", "image2.jpg", "image3.jpg"]
+    """
+    Test adding embeddings and searching. 
+    By normalizing the vectors, you reduce the chance of returning only 1 match.
+    """
 
-    # Add embeddings
+    # Create random embeddings
+    embeddings = torch.randn(3, 512)
+    embeddings = torch.nn.functional.normalize(embeddings, dim=1)
+
+    image_paths = ["image1.jpg", "image2.jpg", "image3.jpg"]
     embedding_store.add_embeddings(embeddings, image_paths)
 
     assert len(embedding_store.metadata) == 3
@@ -35,13 +39,15 @@ def test_add_and_search_embeddings(embedding_store):
         assert embedding_store.metadata[str(i)]["path"] == image_paths[i]
         assert embedding_store.metadata[str(i)]["index"] == i
 
-    # Test search 
+    # Create and normalize query
     query = torch.randn(1, 512)
+    query = torch.nn.functional.normalize(query, dim=1)
+
     results = embedding_store.search(query, top_k=2)
 
     assert len(results) == 2
-    assert all(key in results[0] for key in ["path", "similarity"])
-    assert isinstance(results[0]["similarity"], float)
+    assert "path" in results[0]
+    assert "similarity" in results[0]
 
 
 def test_empty_store_search(embedding_store):

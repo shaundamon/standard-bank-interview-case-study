@@ -35,9 +35,6 @@ def test_text_encoding(clip_model):
 
 def test_image_encoding(clip_model, tmp_path):
     """Test image encoding functionality."""
-    # Create a dummy image for testing
-
-
     img = Image.fromarray(np.random.randint(
         0, 255, (224, 224, 3), dtype=np.uint8))
     embeddings = clip_model.encode_image([img])

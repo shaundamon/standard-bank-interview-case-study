@@ -96,7 +96,7 @@ class EmbeddingStore:
             return []
         query_np = query_np / query_norm
 
-        # enforce or ensure embeddings are 2D and normalize.
+        # enforce or ensure embeddings are 2D and normalized.
         embeddings_2d = self.embeddings.reshape(self.embeddings.shape[0], -1)
         embeddings_norm = np.linalg.norm(embeddings_2d, axis=1, keepdims=True)
         embeddings_2d = embeddings_2d / embeddings_norm

@@ -110,9 +110,28 @@ REST_FRAMEWORK = {
     ],
 }
 
+CORS_ALLOW_ALL_ORIGINS = True
+CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
-    "http://localhost:5173", 
+    "http://127.0.0.1:3000",
+    "http://localhost:5173",
+    "http://127.0.0.1:5173",
+]
+
+CORS_ALLOW_METHODS = [
+    'GET',
+    'POST',
+    'OPTIONS',
+]
+
+CORS_ALLOW_HEADERS = [
+    'accept',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'origin',
+    'user-agent',
 ]
 
 ML_SETTINGS = {
@@ -139,6 +158,12 @@ ML_SETTINGS = {
     'VECTORSTORE': 'faiss'
 }
 
+# # TODO: reminder to tell users to update path and use a new path to download the data.
+# # use this code that is uncommented here : 
+# DATASET_SETTINGS = {
+#     'DATA_PATH': os.path.join(BASE_DIR, 'data', 'images'),
+#     'SAMPLE_SIZE': 500,
+# }
 DATASET_SETTINGS = {
     'SAMPLE_SIZE': int(os.getenv('SAMPLE_SIZE', 500)),
     'DATA_PATH': BASE_DIR / os.getenv('DATA_PATH', 'data/test_data_v2'),

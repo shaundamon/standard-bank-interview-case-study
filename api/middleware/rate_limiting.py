@@ -19,7 +19,6 @@ class RateLimitMiddleware:
         self.time_window = getattr(settings, 'API_RATE_LIMIT_WINDOW', 3600) 
 
     def __call__(self, request: HttpRequest) -> HttpResponse:
-        # Only apply rate limiting to the image search endpoint
         if request.path.startswith('/api/v1/search/'):
             if not self._check_rate_limit(request):
                 return HttpResponse(

@@ -4,6 +4,11 @@ import { Login } from './pages/Login';
 import { Signup } from './pages/Signup';
 import { Home } from './pages/Home';
 import { useAuthStore } from './store/authStore';
+import { Profile } from "./pages/Profile";
+import { ModelSettings } from "./pages/ModelSettings";
+import { AppSettings } from "./pages/AppSettings";
+import { Data } from "./pages/Data";
+
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const user = useAuthStore((state) => state.user);
@@ -19,6 +24,39 @@ function App() {
           element={
             <PrivateRoute>
               <Home />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/data"
+          element={
+            <PrivateRoute>
+              <Data />
+            </PrivateRoute>
+          }
+        />
+
+        <Route
+          path="/profile"
+          element={
+            <PrivateRoute>
+              <Profile />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/settings/model"
+          element={
+            <PrivateRoute>
+              <ModelSettings />
+            </PrivateRoute>
+          }
+        />
+        <Route
+          path="/settings/app"
+          element={
+            <PrivateRoute>
+              <AppSettings />
             </PrivateRoute>
           }
         />
