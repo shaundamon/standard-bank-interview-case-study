@@ -1,9 +1,8 @@
 """Dataset handling for image retrieval system."""
 import logging
 from pathlib import Path
-from typing import List, Optional
+from typing import List
 import shutil
-import zipfile
 import kagglehub
 from django.conf import settings
 

@@ -2,6 +2,7 @@ import logging
 import numpy as np
 import torch
 from PIL import Image
+from ..base import BaseModelHandler
 from transformers import CLIPProcessor, CLIPModel
 
 from .config import CLIPConfig
@@ -9,7 +10,7 @@ from .config import CLIPConfig
 logger = logging.getLogger(__name__)
 
 
-class CLIPModelHandler:
+class CLIPModelHandler(BaseModelHandler):
     """Handles CLIP model operations for image-text similarity."""
 
     def __init__(self, config: CLIPConfig):
@@ -39,9 +40,6 @@ class CLIPModelHandler:
         return torch.from_numpy(text_features)
 
     def encode_image(self, images: list) -> torch.Tensor:
-        # If images are file paths, convert them to PIL images. 
-        # This is because of the different vectorstore, so if a new vectorestore is linked, 
-        # it will pass the image paths as a list
         if isinstance(images[0], str):
             images = [Image.open(img_path).convert("RGB")
                       for img_path in images]
@@ -49,8 +47,13 @@ class CLIPModelHandler:
         inputs = self.processor(images=images, return_tensors="pt")
         inputs = {key: tensor.to(self.device)
                   for key, tensor in inputs.items()}
+        
         # Get image features and normalize.
         with torch.no_grad():
             outputs = self.model.get_image_features(**inputs)
         outputs = outputs / outputs.norm(dim=-1, keepdim=True)
         return outputs
+
+    @property
+    def embedding_dim(self) -> int:
+        return self.config.embedding_dim

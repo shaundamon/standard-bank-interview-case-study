@@ -4,6 +4,12 @@ A case study for Standard Bank as part of their recruitment process for a **Spec
 
 This build is focused on showcasing a full end-to-end implementation of a Multi-Modal Image retrieval application.
 
+## Demo
+[Demo Video](media/assets/screen-capture.webm)
+
+![Demo Gif](media/assets/demo_gif.gif)
+
+
 ## Features
 - Text-to-image search using natural language queries
 - Multiple AI model support (CLIP and BLIP2)
@@ -45,7 +51,7 @@ cd standard-bank-interview-case-study
 cp .env.example .env
 ```
 
-3. [**Optional - Only required when switching from CLIP to BLIP2 model**] Add your Hugging Face API token to the .env file (get one at https://huggingface.co/settings/tokens):
+3. [**Optional - Only required when switching from CLIP to BLIP2 model, CLIP is default**] Add your Hugging Face API token to the .env file (get one at https://huggingface.co/settings/tokens):
 
 4. Build and start the containers:
 
@@ -68,11 +74,19 @@ git clone https://github.com/shaundamon/standard-bank-interview-case-study.git
 cd standard-bank-interview-case-study
 ```
 
-2. Set up the backend (see [Backend Setup](api/README.md))
+2. Create and activate virtual environment:
 
-3. Set up the frontend (see [Frontend Setup](webapp/README.md))
+```bash
+python3 -m venv venv
 
-## Architecture Overview
+source venv/bin/activate # windows: venv\Scripts\activate
+```
+
+3. Set up the backend (see [Backend Setup](api/README.md))
+
+4. Set up the frontend (see [Frontend Setup](webapp/README.md))
+
+## Architecture
 ![User Journey - High Lever](media/assets/image.png)
 
 ![User Journey - High Lever](media/assets/image2.png)

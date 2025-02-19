@@ -17,49 +17,11 @@ backend/
 └── manage.py
 ```
 
-## Dataset Setup
-
-The project uses an AI vs Human Generated Image dataset from Kaggle. There are two ways to get the dataset:
-
-### Option 1: Automatic Download (Recommended)
-The application will automatically download the dataset when you start it for the first time. This is handled by the `DatasetManager` class using the Kaggle API.
-
-1. Get your Kaggle API credentials:
-   - Go to your Kaggle account settings (https://www.kaggle.com/settings)
-   - Scroll to "API" section and click "Create New Token"
-   - This will download a `kaggle.json` file
-
-2. Place your Kaggle credentials:
-   - On Windows: `C:\Users\<YOUR-USERNAME>\.kaggle\kaggle.json`
-   - On Linux/macOS: `~/.kaggle/kaggle.json`
-
-### Option 2: Manual Download
-If you prefer to download the dataset manually:
-
-1. Visit the dataset page: [AI vs Human Generated Dataset](https://www.kaggle.com/datasets/alessandrasala79/ai-vs-human-generated-dataset/data?select=test_data_v2)
-
-2. Click the "Download" button (requires Kaggle account)
-
-3. Extract the downloaded zip file
-
-4. Place the `test_data_v2` folder contents in:
-   ```
-   api/data/dataset/
-   ```
-
-5. Update your `.env` file to point to the correct path:
-   ```
-   DATASET_PATH=api/data/dataset
-   ```
-
-**_Note_**: The dataset zip file is 10GB in size but you only need a sample of 500
-
-
 ## Server Setup
 
 1. Install dependencies:
 
-**_NB_**: Ensure you are have activated your virtual env
+**_NB_**: Ensure you are have activated your virtual env that you must've created and activated from here : [Main README](README.md)
 
 ```bash
 pip install -r requirements.txt
@@ -103,6 +65,28 @@ cp .env.example .env
    # Hugging Face Settings
    HUGGINGFACE_API_TOKEN=your_token_here
 ```
+
+## Dataset Setup
+
+The application automatically downloads the required dataset when you first run it. No manual setup is needed!
+
+You will first need to:
+1. Get a Kaggle account (free) at https://www.kaggle.com/signup
+2. Get your API token from https://www.kaggle.com/settings
+3. Add your Kaggle username and API key to your `.env` file
+
+**Dataset Details:**
+- Uses the AI vs Human Generated Image dataset from Kaggle
+- Downloads ~500 sample images (about 1GB)
+- Stored in local cache at:
+  - Windows: `C:\Users\<USERNAME>\.cache\kagglehub\datasets\`
+  - Linux/macOS: `~/.cache/kagglehub/datasets/`
+
+If you prefer to download manually instead:
+1. Download from [AI vs Human Generated Dataset](https://www.kaggle.com/datasets/alessandrasala79/ai-vs-human-generated-dataset/data?select=test_data_v2)
+2. Extract to `api/data/dataset/`
+3. Update your `.env`: `DATASET_PATH=api/data/dataset`
+
 
 4. Run migrations:
 
@@ -158,26 +142,10 @@ pytest --cov=api --cov=ml --cov-report=term-missing
 - `tests/api/`: API endpoint tests
   - `test_search.py`: Tests for image search endpoints
 
-### Writing Tests
-
-Example test structure:
-```python
-@pytest.fixture
-def your_fixture():
-    """Fixture description."""
-    # Setup code
-    yield resource
-    # Cleanup code
-
-def test_your_feature(your_fixture):
-    """Test description."""
-    # Test implementation
-    assert expected == actual
-```
-
 ### Test Coverage
 
 Key areas covered by tests:
 - Embedding store operations
 - CLIP model text and image encoding
 - API endpoint functionality
+

@@ -26,5 +26,13 @@ services:
       - DJANGO_SECRET_KEY=your-secret-key-here
       - DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1
       - HUGGINGFACE_API_TOKEN=${HUGGINGFACE_API_TOKEN}
+      - KAGGLE_USERNAME=your_kaggle_username
+      - KAGGLE_KEY=your_kaggle_api_key
+      - DATA_PATH=/path/to/your/data
+      - MODEL_NAME=openai/clip-vit-base-patch32
+      - EMBEDDING_DIM=512
+      - BATCH_SIZE=32
+      - TOP_K=5
+      - SAMPLE_SIZE=500
     volumes:
       - ./api:/app
