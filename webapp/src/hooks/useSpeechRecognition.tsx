@@ -1,46 +1,41 @@
-import { useState } from "react";
+import "regenerator-runtime/runtime";
+import { useState, useCallback } from "react";
+import SpeechRecognition, {
+  useSpeechRecognition as useBrowserSpeechRecognition,
+} from "react-speech-recognition";
 import { useSpeechSynthesis } from "./useSpeechSynthesis";
 
 export const useSpeechRecognition = () => {
   const [isRecording, setIsRecording] = useState(false);
-  const [mediaRecorder, setMediaRecorder] = useState<MediaRecorder | null>(
-    null
-  );
   const { speak } = useSpeechSynthesis();
 
-  const startRecording = async () => {
-    try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const recorder = new MediaRecorder(stream);
+  const { transcript, resetTranscript, browserSupportsSpeechRecognition } =
+    useBrowserSpeechRecognition();
 
-      recorder.onstart = () => {
-        setIsRecording(true);
-        speak("Recording started");
-      };
-
-      recorder.onstop = () => {
-        setIsRecording(false);
-        speak("Processing your voice query");
-      };
-
-      recorder.start();
-      setMediaRecorder(recorder);
-    } catch (err) {
-      console.error("Error starting recording:", err);
-      speak("Could not access microphone. Please check your permissions.");
+  const startRecording = useCallback(() => {
+    if (!browserSupportsSpeechRecognition) {
+      speak("Your browser doesn't support speech recognition");
+      return;
     }
-  };
+    setIsRecording(true);
+    resetTranscript();
+    SpeechRecognition.startListening({ continuous: true });
+    // speak("Recording started"); // removed this line as it gets appended to transcript text on the input
+  }, [speak, browserSupportsSpeechRecognition, resetTranscript]);
 
-  const stopRecording = () => {
-    if (mediaRecorder && isRecording) {
-      mediaRecorder.stop();
-      mediaRecorder.stream.getTracks().forEach((track) => track.stop());
+  const stopRecording = useCallback(() => {
+    if (isRecording) {
+      SpeechRecognition.stopListening();
+      setIsRecording(false);
+      speak("Recording stopped");
     }
-  };
+  }, [isRecording, speak]);
 
   return {
     isRecording,
+    transcript,
     startRecording,
     stopRecording,
+    browserSupportsSpeechRecognition,
   };
 };

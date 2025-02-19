@@ -84,5 +84,9 @@ Once the backend is running, visit:
 - Swagger UI: `http://localhost:8000/api/docs/`
 - ReDoc: `http://localhost:8000/api/redoc/`
 
+## Assumptions
+- The system assumes that 500 images are enough for demonstrating the system's capabilities. 
+- Another assumption comes from the case study mentioning that we need to return the top-K matching neighbors but it did not specify the value for the k. 
+The implementation assumes showing the top-5 results provides the users with enough options.
 
 ---

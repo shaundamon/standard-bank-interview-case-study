@@ -1,45 +1,40 @@
-import React, { useState } from "react";
+import { useState, useCallback } from "react";
 import SpeechRecognition, {
-  useSpeechRecognition,
+  useSpeechRecognition as useBrowserSpeechRecognition,
 } from "react-speech-recognition";
-import { SpeechInputProps } from "../types";
+import { useSpeechSynthesis } from "../hooks/useSpeechSynthesis";
 
-const SpeechInput: React.FC<SpeechInputProps> = ({ onTranscript }) => {
-  const [isListening, setIsListening] = useState(false);
+export const useSpeechRecognition = () => {
+  const [isRecording, setIsRecording] = useState(false);
+  const { speak } = useSpeechSynthesis();
+
   const { transcript, resetTranscript, browserSupportsSpeechRecognition } =
-    useSpeechRecognition();
+    useBrowserSpeechRecognition();
 
-  if (!browserSupportsSpeechRecognition) {
-    return <div>Browser doesn't support speech recognition.</div>;
-  }
-
-  const handleStart = () => {
-    setIsListening(true);
+  const startRecording = useCallback(() => {
+    if (!browserSupportsSpeechRecognition) {
+      speak("Your browser doesn't support speech recognition");
+      return;
+    }
+    setIsRecording(true);
     resetTranscript();
     SpeechRecognition.startListening({ continuous: true });
-  };
+    speak("Recording started");
+  }, [speak, browserSupportsSpeechRecognition, resetTranscript]);
 
-  const handleStop = () => {
-    setIsListening(false);
-    SpeechRecognition.stopListening();
-    if (transcript) {
-      onTranscript(transcript);
+  const stopRecording = useCallback(() => {
+    if (isRecording) {
+      SpeechRecognition.stopListening();
+      setIsRecording(false);
+      speak("Recording stopped");
     }
+  }, [isRecording, speak]);
+
+  return {
+    isRecording,
+    transcript,
+    startRecording,
+    stopRecording,
+    browserSupportsSpeechRecognition,
   };
-
-  return (
-    <div className="speech-input">
-      <button
-        onClick={isListening ? handleStop : handleStart}
-        className={`speech-button ${isListening ? "listening" : ""}`}
-      >
-        {isListening ? "Stop Recording" : "Start Recording"}
-      </button>
-      {isListening && (
-        <div className="transcript-preview">{transcript || "Speak now..."}</div>
-      )}
-    </div>
-  );
 };
-
-export default SpeechInput;

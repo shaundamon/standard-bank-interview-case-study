@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Search, Mic } from "lucide-react";
 import { useSpeechRecognition } from "../hooks/useSpeechRecognition";
 import { SearchBarProps } from "../types";
+import { useSpeechSynthesis } from "../hooks/useSpeechSynthesis";
 
 export const SearchBar: React.FC<SearchBarProps> = ({
   query,
@@ -9,7 +10,18 @@ export const SearchBar: React.FC<SearchBarProps> = ({
   loading,
   onSearch,
 }) => {
-  const { isRecording, startRecording, stopRecording } = useSpeechRecognition();
+  const { isRecording, transcript, startRecording, stopRecording } =
+    useSpeechRecognition();
+  const { speak } = useSpeechSynthesis();
+
+  useEffect(() => {
+    if (transcript && !isRecording) {
+      setQuery(transcript);
+      setTimeout(() => {
+        speak(`You said: ${transcript}`);
+      }, 500);
+    }
+  }, [transcript, isRecording, setQuery, speak]);
 
   return (
     <form onSubmit={onSearch} className="w-full max-w-3xl mx-auto">

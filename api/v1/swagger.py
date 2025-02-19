@@ -14,7 +14,7 @@ schema_view = get_schema_view(
     ),
     public=True,
     permission_classes=(permissions.AllowAny,),
-    url='http://localhost:8000/api/v1/', 
+    url='http://localhost:8001/api/v1/', 
 )
 
 urlpatterns = [

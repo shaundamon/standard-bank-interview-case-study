@@ -9,7 +9,7 @@ from rest_framework.views import APIView
 
 from ml.data.dataset import DatasetManager
 from ml.models.embeddings.numpy_store import EmbeddingStore
-from ml.models.factory import ModelFactory
+from ml.models.clip import initialize_clip_model
 from ml.models.vectorstores.faiss_store import FaissVectorStore
 from .utils import ImageSearchService, DatasetService
 
@@ -20,34 +20,27 @@ class ImageSearchView(APIView):
     """Handle image search requests."""
     permission_classes = [AllowAny]
 
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Initialize model and vector store
         self.search_service = self._initialize_search_service()
 
-    def _initialize_search_service(self) -> ImageSearchService:
-        """Initialize the search service with appropriate model and vector store."""
-        # Read the default model from settings and obtain its configuration
-        default_model_key = settings.ML_SETTINGS.get("DEFAULT_MODEL")
-        model_config = settings.ML_SETTINGS["MODELS"][default_model_key]
-        model_handler = ModelFactory.create_model(
-            default_model_key, model_config)
-        logger.info(f"ImageSearchView using model: {default_model_key}")
 
-        # Choose vector store
+    def _initialize_search_service(self) -> ImageSearchService:
+        """Initialize the search service with vector store only."""
+        model_handler = initialize_clip_model() 
+        
         if settings.ML_SETTINGS.get("VECTORSTORE", "numpy") == "faiss":
             vectorstore = FaissVectorStore(
-                dimension=model_config["embedding_dim"],
+                dimension=settings.ML_SETTINGS['MODELS']['clip']['embedding_dim'],
                 store_dir=settings.BASE_DIR / "data" / "faiss_store",
                 model_handler=model_handler,
             )
             logger.info("Using FAISS vector store for similarity search")
         else:
-            # fallback to numpy store
             vectorstore = EmbeddingStore(
                 settings.BASE_DIR / "data" / "embeddings")
-            logger.info(
-                "Using Numpy-based embedding store for similarity search")
+            logger.info("Using Numpy-based embedding store for similarity search")
 
         return ImageSearchService(model_handler, vectorstore)
 

@@ -43,7 +43,7 @@ def test_add_and_search_embeddings(embedding_store):
     query = torch.randn(1, 512)
     query = torch.nn.functional.normalize(query, dim=1)
 
-    results = embedding_store.search(query, top_k=2)
+    results = embedding_store.search(query, top_k=2, threshold=-1.0)
 
     assert len(results) == 2
     assert "path" in results[0]

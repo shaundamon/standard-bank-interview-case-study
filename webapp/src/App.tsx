@@ -1,14 +1,14 @@
-import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { Login } from './pages/Login';
-import { Signup } from './pages/Signup';
-import { Home } from './pages/Home';
-import { useAuthStore } from './store/authStore';
+import React, { useEffect } from "react";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { Login } from "./pages/Login";
+import { Signup } from "./pages/Signup";
+import { Home } from "./pages/Home";
+import { useAuthStore } from "./store/authStore";
 import { Profile } from "./pages/Profile";
 import { ModelSettings } from "./pages/ModelSettings";
 import { AppSettings } from "./pages/AppSettings";
 import { Data } from "./pages/Data";
-
+import { useSettingsStore } from "./store/settingsStore";
 
 function PrivateRoute({ children }: { children: React.ReactNode }) {
   const user = useAuthStore((state) => state.user);
@@ -16,6 +16,18 @@ function PrivateRoute({ children }: { children: React.ReactNode }) {
 }
 
 function App() {
+  const { toggleScreenReader } = useSettingsStore();
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      // Toggle screen reader with Alt + S
+      if (e.altKey && e.key === "s") {
+        toggleScreenReader();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyPress);
+    return () => window.removeEventListener("keydown", handleKeyPress);
+  }, [toggleScreenReader]);
   return (
     <BrowserRouter>
       <Routes>

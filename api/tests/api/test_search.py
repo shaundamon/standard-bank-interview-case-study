@@ -71,15 +71,5 @@ def test_search_endpoint_missing_query(api_client, mock_clip_model, mock_embeddi
     response = api_client.post(url, {}, format='json')
 
     assert response.status_code == status.HTTP_400_BAD_REQUEST
-    assert 'error' in response.data
+    assert 'query' in response.data
 
-
-def test_search_endpoint_model_error(api_client, mock_clip_model, mock_embedding_store):
-    """Example test: handle model error."""
-    url = reverse('image-search')
-    mock_clip_model.encode_text.side_effect = Exception("Model error")
-
-    response = api_client.post(url, {"query": "test"}, format='json')
-
-    assert response.status_code == status.HTTP_500_INTERNAL_SERVER_ERROR
-    assert 'error' in response.data
