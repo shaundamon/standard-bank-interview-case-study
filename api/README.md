@@ -21,7 +21,7 @@ backend/
 
 1. Install dependencies:
 
-**_NB_**: Ensure you have activated your virtual env which you must've created and activated from here : [Main README](README.md)
+**_NB_**: Ensure you have activated your virtual env which you must've created and activated from here : [Main README](../README.md)
 
 ```bash
 pip install -r requirements.txt
