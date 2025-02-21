@@ -84,7 +84,7 @@ DATA_PATH=/custom/path/to/data
 
 If you prefer to download manually instead:
 - Download from [AI vs Human Generated Dataset](https://www.kaggle.com/datasets/alessandrasala79/ai-vs-human-generated-dataset/data?select=test_data_v2)
-- Extract to `api/data/`
+- Extract to `api/data/dataset/`
 - Update your `.env`: `DATASET_PATH=api/data/`
 
 
