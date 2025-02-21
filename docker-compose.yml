@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   frontend:
     build:
@@ -25,10 +23,10 @@ services:
       - DJANGO_DEBUG=True
       - DJANGO_SECRET_KEY=your-secret-key-here
       - DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1
-      - HUGGINGFACE_API_TOKEN=${HUGGINGFACE_API_TOKEN}
+      - HUGGINGFACE_API_TOKEN=your_huggingface_api_token
       - KAGGLE_USERNAME=your_kaggle_username
       - KAGGLE_KEY=your_kaggle_api_key
-      - DATA_PATH=/path/to/your/data
+      - DATA_PATH=/app/data
       - MODEL_NAME=openai/clip-vit-base-patch32
       - EMBEDDING_DIM=512
       - BATCH_SIZE=32
@@ -36,3 +34,7 @@ services:
       - SAMPLE_SIZE=500
     volumes:
       - ./api:/app
+      - dataset_data:/app/data
+
+volumes:
+  dataset_data:

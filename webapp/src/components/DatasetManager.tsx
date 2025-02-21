@@ -9,14 +9,18 @@ export const DatasetManager: React.FC = () => {
     image_count: number;
   } | null>(null);
 
-  const checkStatus = async () => {
-    try {
-      const status = await datasetApi.getDatasetStatus();
-      setStatus(status);
-    } catch (error) {
-      console.error("Error checking dataset status:", error);
+const checkStatus = async () => {
+  try {
+    const status = await datasetApi.getDatasetStatus();
+    setStatus(status);
+
+    if (!status.exists) {
+      handleDownload();
     }
-  };
+  } catch (error) {
+    console.error("Error checking dataset status:", error);
+  }
+};
 
   const handleDownload = async () => {
     setLoading(true);

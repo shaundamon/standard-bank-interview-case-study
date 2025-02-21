@@ -25,7 +25,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'corsheaders',
     'drf_yasg',
-    'v1.ai_engine.apps.ApiConfig',
+    'v1.ai_engine.apps.AIEngineConfig',
     'v1.ml.apps.MLConfig',
 ]
 
@@ -166,9 +166,10 @@ ML_SETTINGS = {
 #     'DATA_PATH': os.path.join(BASE_DIR, 'data', 'images'),
 #     'SAMPLE_SIZE': 500,
 # }
+
 DATASET_SETTINGS = {
+    'DATA_PATH': BASE_DIR / os.getenv('DATA_PATH', 'data/dataset'),
     'SAMPLE_SIZE': int(os.getenv('SAMPLE_SIZE', 500)),
-    'DATA_PATH': BASE_DIR / os.getenv('DATA_PATH', 'data/test_data_v2'),
 }
 
 LOGGING = {

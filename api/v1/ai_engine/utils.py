@@ -141,12 +141,28 @@ class DatasetService:
 
     def load_dataset_images(self):
         """Load images for dataset info endpoint."""
-        images = self.dataset_manager.load_images()
-        return images
+        try:
+            images = self.dataset_manager.load_images()
+            if not images:
+                logger.warning("No images found in dataset")
+                return None
+            return images
+        except FileNotFoundError as e:
+            logger.error(f"Dataset not found: {str(e)}")
+            return None
+        except Exception as e:
+            logger.error(f"Error loading dataset images: {str(e)}")
+            raise
 
     def trigger_download(self):
         """Trigger dataset download and processing."""
-        self.dataset_manager.download_dataset()
+        try:
+            logger.info("Starting dataset download")
+            self.dataset_manager.download_dataset()
+            logger.info("Dataset download completed successfully")
+        except Exception as e:
+            logger.error(f"Dataset download failed: {str(e)}")
+            raise Exception(f"Failed to download dataset: {str(e)}")
 
     def download_with_progress_generator(self):
         """

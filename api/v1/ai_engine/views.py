@@ -6,6 +6,8 @@ from rest_framework import status
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from drf_yasg import openapi
+from drf_yasg.utils import swagger_auto_schema
 
 from ..ml.dataset_handler.dataset import DatasetManager
 from ..ml.models.store_handlers.numpy_store import EmbeddingStore
@@ -53,6 +55,48 @@ class ImageSearchView(APIView):
 
         return ImageSearchService(model_handler, vectorstore)
 
+
+    @swagger_auto_schema(
+        tags=['search'],
+        operation_summary="Search images by text description",
+        operation_description="Search for images based on a text query using semantic similarity",
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            required=['query'],
+            properties={
+                'query': openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    description='Text description to search for'
+                ),
+                'top_k': openapi.Schema(
+                    type=openapi.TYPE_INTEGER,
+                    description='Number of results to return (default: 5)'
+                ),
+            }
+        ),
+        responses={
+            200: openapi.Response(
+                description='Successful search results',
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        'results': openapi.Schema(
+                            type=openapi.TYPE_ARRAY,
+                            items=openapi.Schema(
+                                type=openapi.TYPE_OBJECT,
+                                properties={
+                                    'path': openapi.Schema(type=openapi.TYPE_STRING),
+                                    'similarity': openapi.Schema(type=openapi.TYPE_NUMBER)
+                                }
+                            )
+                        )
+                    }
+                )
+            ),
+            400: 'Invalid request parameters',
+            500: 'Server error during search'
+        }
+    )
     def post(self, request):
         """
         Search for images based on text query.
@@ -82,21 +126,22 @@ class DatasetManagementView(APIView):
         Get current dataset status.
         
         Returns information about dataset existence, image count, and storage location.
-        """
+        """        
         try:
             images = self.dataset_service.load_dataset_images()
             return Response(
                 {
                     "status": "success",
-                    "exists": True,
-                    "image_count": len(images),
+                    "exists": images is not None,
+                    "image_count": len(images) if images else 0,
                     "data_path": str(settings.DATASET_SETTINGS["DATA_PATH"]),
                 }
             )
-        except FileNotFoundError:
+        except Exception as e:
+            logger.error(f"Error getting dataset status: {str(e)}")
             return Response(
                 {
-                    "status": "success",
+                    "status": "error",
                     "exists": False,
                     "image_count": 0,
                     "data_path": str(settings.DATASET_SETTINGS["DATA_PATH"]),

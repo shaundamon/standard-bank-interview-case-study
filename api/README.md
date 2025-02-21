@@ -66,19 +66,21 @@ cp .env.example .env
 
 ## Dataset Setup
 
-The application automatically downloads the required dataset when you first run it but we'll need a few things from you. No manual setup is needed!
+The application handles dataset storage differently based on your setup:
 
-You will first need to:
-1. Get a Kaggle account (free) at https://www.kaggle.com/signup
-2. Get your API token from https://www.kaggle.com/settings
-3. Add your Kaggle username and API key to your `.env` file and you're good to go!
+### Docker Setup
+Data is automatically stored in a Docker volume at `/app/data`
 
-**Dataset Details:**
-- Uses the AI vs Human Generated Image dataset from Kaggle
-- Downloads ~500 sample images (about 1GB)
-- Stored in local cache at:
-  - Windows: `C:\Users\<USERNAME>\.cache\kagglehub\datasets\`
-  - Linux/macOS: `~/.cache/kagglehub/datasets/`
+### Local Setup
+By default, data is stored in:
+- Windows: `C:\Users\<username>\.imageai\data`
+- Linux/Mac: `~/.imageai/data`
+
+You can override this by setting `DATA_PATH` in your `.env` file:
+
+```env
+DATA_PATH=/custom/path/to/data
+```
 
 If you prefer to download manually instead:
 - Download from [AI vs Human Generated Dataset](https://www.kaggle.com/datasets/alessandrasala79/ai-vs-human-generated-dataset/data?select=test_data_v2)

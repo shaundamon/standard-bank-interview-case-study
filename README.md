@@ -59,6 +59,13 @@ cp .env.example .env
 docker-compose up --build
 ```
 
+The application will automatically:
+- Start the backend API server
+- Start the frontend development server
+- Check for the required dataset
+- Download the dataset if not present
+No additional setup is required - just wait for the initial dataset download to complete before using the search functionality.
+
 5. Access the application:
 - Frontend: http://localhost:5173
 - Backend API: http://localhost:8000
