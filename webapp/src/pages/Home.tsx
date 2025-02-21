@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Layout } from "../components/Layout";
 import { SearchBar } from "../components/SearchBar";
 import { SearchResults } from "../components/SearchResults";
@@ -6,7 +6,6 @@ import { LoadingAnimation } from "../components/LoadingAnimation";
 import { imageApi } from "../lib/api";
 import { SearchResult } from "../types";
 import { useSpeechSynthesis } from "../hooks/useSpeechSynthesis";
-import { supabase } from "../lib/supabase";
 
 export const Home: React.FC = () => {
   const [query, setQuery] = useState("");
@@ -33,28 +32,10 @@ export const Home: React.FC = () => {
     }
   };
 
-  useEffect(() => {
-    const fetchRecentImages = async () => {
-      try {
-        const { data, error } = await supabase
-          .from("images")
-          .select("*")
-          .order("created_at", { ascending: false })
-          .limit(6);
-
-        if (error) throw error;
-        setResults(data || []);
-      } catch (err) {
-        console.error("Error fetching recent images:", err);
-      }
-    };
-
-    fetchRecentImages();
-  }, []);
 
   return (
     <Layout title="Image Retrieval">
-      <div className="max-w-3xl mx-auto">
+      <div className="max-w-7xl mx-auto mb-2">
         <SearchBar
           query={query}
           setQuery={setQuery}

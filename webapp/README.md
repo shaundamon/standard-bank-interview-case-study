@@ -2,9 +2,9 @@
 
 ## Overview
 
-The frontend is a React-based  application built with Vite for the Multi-Modal Image Retrieval System. It provides an intuitive user interface for searching images using natural language queries.
+The frontend is a React-based  application built with Vite for the Multi-Modal Image Retrieval System. It provides an intuitive user interface for searching images using natural language queries with an extension to cater for the disiabled people by allowing screen reader feedback and voice input queries.
 
-This is supported by our django api backend which provides the necessary endpoints for retrieving images based on text descriptions and returns best matching neighbors.
+This is supported by our django api backend which provides the necessary endpoints for retrieving images based on text descriptions and returns top matching neighbors.
 
 ## Prerequisites
 
@@ -21,18 +21,18 @@ npm install
 
 2. Create environment file:
 ```bash
-cp .env.example .env
+cp .env.example .env.local
 ```
 
 3. Configure environment variables:
 ```env
 VITE_API_URL=http://localhost:8000
-# Optional: Supabase configuration (only if using Supabase)
+# Optional: Supabase configuration (only if using Supabase for auth)
 VITE_SUPABASE_ANON_KEY=your_supabase_anon_key # for auth management
 VITE_SUPABASE_URL=your_supabase_url
 ```
 
-**_Note_**: For development without Supabase, you can skip setting the Supabase environment variables. The app will automatically use a mock auth functionality.
+**Note**: For development without Supabase, you can skip setting the Supabase environment variables. The app will automatically use a mock auth functionality that accepts any email/password combination for testing purposes.
 
 ## Development
 
@@ -41,18 +41,6 @@ Start the development server:
 npm run dev
 ```
 The application will be available at `http://localhost:5173`
-
-## Building for Production
-
-1. Create production build:
-```bash
-npm run build
-```
-
-2. Preview production build:
-```bash
-npm run preview
-```
 
 ## Project Structure
 
@@ -77,13 +65,6 @@ webapp/
 - Image preview modal
 - Loading states and error handling
 - Similarity score display
-
-## Contributing
-
-1. Create a new branch
-2. Make your changes
-3. Run tests and linting
-4. Submit a pull request
 
 ## Dependencies
 

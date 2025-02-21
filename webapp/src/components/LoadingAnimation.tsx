@@ -12,7 +12,7 @@ const sampleImages = [
 
 export const LoadingAnimation: React.FC = () => {
   return (
-    <div className="relative h-64 w-full overflow-hidden rounded-lg">
+    <div className="relative h-64 w-full overflow-hidden rounded-lg mt-6">
       <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 backdrop-blur-sm" />
       {sampleImages.map((src, index) => (
         <motion.div

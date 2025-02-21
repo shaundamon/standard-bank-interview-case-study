@@ -56,6 +56,7 @@ class EmbeddingStore:
         if self.embeddings.size == 0:
             self.embeddings = embeddings_np
         else:
+            # append or stack to existing embeddings
             self.embeddings = np.vstack([self.embeddings, embeddings_np])
 
         # Update metadata
@@ -88,7 +89,6 @@ class EmbeddingStore:
         logger.debug(
             f"Searching through {self.embeddings.shape[0]} embeddings")
 
-        # Squeeze and reshape query embedding to (1, -1) and normalize.
         query_np = query_embedding.squeeze().numpy().reshape(1, -1)
         query_norm = np.linalg.norm(query_np, axis=1, keepdims=True)
         if (query_norm == 0).any():

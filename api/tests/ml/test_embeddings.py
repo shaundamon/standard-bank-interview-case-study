@@ -2,7 +2,7 @@ import pytest
 import torch
 import numpy as np
 from pathlib import Path
-from ml.models.embeddings.numpy_store import EmbeddingStore
+from api.ml.models.store_handlers.numpy_store import EmbeddingStore
 
 
 @pytest.fixture

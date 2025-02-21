@@ -26,7 +26,7 @@ INSTALLED_APPS = [
     'corsheaders',
     'drf_yasg',
     'v1.ai_engine.apps.ApiConfig',
-    'ml.apps.MLConfig',
+    'v1.ml.apps.MLConfig',
 ]
 
 MIDDLEWARE = [
@@ -159,8 +159,9 @@ ML_SETTINGS = {
     'VECTORSTORE': 'faiss'
 }
 
-# # TODO: reminder to tell users to update path and use a new path to download the data.
-# # use this code that is uncommented here : 
+# # TODO: reminder to update path and use a new path to download the data.
+# # use this code that is uncommented here below.
+# (also explained in the readme's - you can either set it here or manually as explained in the readme) : 
 # DATASET_SETTINGS = {
 #     'DATA_PATH': os.path.join(BASE_DIR, 'data', 'images'),
 #     'SAMPLE_SIZE': 500,

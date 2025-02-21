@@ -13,8 +13,31 @@ export const SearchResults: React.FC<SearchResponse> = ({
 
   if (!results.length) {
     return (
-      <div className="mt-8 text-center text-gray-600 dark:text-gray-400">
-        No images available. Start by searching for something above.
+      <div className="mt-8">
+        {/* <div className="text-center text-gray-600 dark:text-gray-400 mb-6">
+          No images available. Start by searching for something above.
+        </div> */}
+        <motion.div 
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 opacity-50"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 0.5 }}
+        >
+          {[...Array(5)].map((_, index) => (
+            <motion.div
+              key={index}
+              className="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: index * 0.1 }}
+            >
+              <div className="w-full h-48 bg-gray-200 dark:bg-gray-700" />
+              <div className="p-4">
+                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4" />
+                <div className="mt-2 h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2" />
+              </div>
+            </motion.div>
+          ))}
+        </motion.div>
       </div>
     );
   }

@@ -68,21 +68,31 @@ class ImageSearchService:
             return None
 
     def search_images(self, request) -> Response:
-        """Handle complete search flow including validation and tracking."""
+        """
+        Handle image search flow with request validation, query processing, and interaction tracking.
+
+        Args:
+            request: HTTP request object containing search query
+
+        Returns:
+            Response: JSON response containing search results or error details
+        """
         try:
-            # Start timing
+            logger.info("Starting new image search request")
             start_time = time.time()
 
-            # Validate request
+            logger.debug("Validating search request data")
             validated_data, error_response = self.validate_search_request(
                 request.data)
             if error_response:
+                logger.warning("Search request validation failed")
                 return error_response
 
             query = validated_data['query']
             top_k = validated_data.get('top_k', settings.ML_SETTINGS["TOP_K"])
+            logger.info(f"Processing search for query: '{query}' with top_k={top_k}")
 
-            # Process query templates and encode them
+            logger.debug("Generating query templates for semantic search")
             query_templates = self.preprocess_query(query)
             all_embeddings = []
             for template in query_templates:
@@ -90,23 +100,24 @@ class ImageSearchService:
                 embedding = self.model_handler.encode_text(template)
                 all_embeddings.append(embedding)
 
-            # Average the embeddings and re-normalize
+            logger.debug("Computing averaged query embedding")
             query_embedding = torch.mean(torch.stack(all_embeddings), dim=0)
             query_embedding = query_embedding / torch.norm(query_embedding)
 
-            # Execute search
             logger.info("Searching for similar images...")
             results = self.vectorstore.search(
                 query_embedding, top_k=top_k, threshold=0.0)
             logger.info(f"Found {len(results)} matching images")
             logger.debug(f"Search results: {results}")
 
-            # Calculate processing time and track interaction
             processing_time = time.time() - start_time
+            logger.info(f"Search completed in {processing_time:.2f} seconds")
+
+            logger.debug("Tracking search interaction in database")
             self.track_search_interaction(
                 request, query, results, processing_time)
 
-            # Serialize and return response
+            logger.debug("Serializing response data")
             response_serializer = ImageSearchResponseSerializer(
                 data={'results': results})
             response_serializer.is_valid(raise_exception=True)

@@ -19,7 +19,7 @@ function App() {
   const { toggleScreenReader } = useSettingsStore();
   useEffect(() => {
     const handleKeyPress = (e: KeyboardEvent) => {
-      // Toggle screen reader with Alt + S
+      // Toggle screen reader with Alt + S, shortcut instead of navigating to settings
       if (e.altKey && e.key === "s") {
         toggleScreenReader();
       }

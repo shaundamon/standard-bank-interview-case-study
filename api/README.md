@@ -21,15 +21,13 @@ backend/
 
 1. Install dependencies:
 
-**_NB_**: Ensure you are have activated your virtual env that you must've created and activated from here : [Main README](README.md)
+**_NB_**: Ensure you have activated your virtual env which you must've created and activated from here : [Main README](README.md)
 
 ```bash
 pip install -r requirements.txt
 ```
 
-2. Get a Hugging Face API token from https://huggingface.co/settings/tokens
-
-3. Create .env file:
+2. Create .env file:
 
 ```bash
 cp .env.example .env
@@ -59,7 +57,7 @@ cp .env.example .env
    SAMPLE_SIZE=500
 
    # Kaggle Settings
-   KAGGLE_USERNAME=your_kaggle_username # for dataset download
+   KAGGLE_USERNAME=your_kaggle_username # for dataset download(optional, below explains the data part)
    KAGGLE_KEY=your_kaggle_api_key
 
    # Hugging Face Settings
@@ -68,12 +66,12 @@ cp .env.example .env
 
 ## Dataset Setup
 
-The application automatically downloads the required dataset when you first run it. No manual setup is needed!
+The application automatically downloads the required dataset when you first run it but we'll need a few things from you. No manual setup is needed!
 
 You will first need to:
 1. Get a Kaggle account (free) at https://www.kaggle.com/signup
 2. Get your API token from https://www.kaggle.com/settings
-3. Add your Kaggle username and API key to your `.env` file
+3. Add your Kaggle username and API key to your `.env` file and you're good to go!
 
 **Dataset Details:**
 - Uses the AI vs Human Generated Image dataset from Kaggle
@@ -83,18 +81,18 @@ You will first need to:
   - Linux/macOS: `~/.cache/kagglehub/datasets/`
 
 If you prefer to download manually instead:
-1. Download from [AI vs Human Generated Dataset](https://www.kaggle.com/datasets/alessandrasala79/ai-vs-human-generated-dataset/data?select=test_data_v2)
-2. Extract to `api/data/dataset/`
-3. Update your `.env`: `DATASET_PATH=api/data/dataset`
+- Download from [AI vs Human Generated Dataset](https://www.kaggle.com/datasets/alessandrasala79/ai-vs-human-generated-dataset/data?select=test_data_v2)
+- Extract to `api/data/dataset/`
+- Update your `.env`: `DATASET_PATH=api/data/dataset`
 
 
-4. Run migrations:
+3. Run migrations:
 
 ```bash
 python manage.py migrate
 ```
 
-5. Run development server:
+4. Run development server:
 ```bash
 python manage.py runserver
 ```

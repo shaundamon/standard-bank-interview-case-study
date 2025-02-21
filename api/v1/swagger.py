@@ -17,6 +17,55 @@ schema_view = get_schema_view(
     url='http://localhost:8001/api/v1/', 
 )
 
+# Image Search schemas
+image_search_request = openapi.Schema(
+    type=openapi.TYPE_OBJECT,
+    properties={
+        'query': openapi.Schema(type=openapi.TYPE_STRING, description='Text query to search for images'),
+        'num_results': openapi.Schema(type=openapi.TYPE_INTEGER, description='Number of results to return')
+    },
+    required=['query']
+)
+
+image_search_response = openapi.Response(
+    'Successful search results',
+    schema=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'results': openapi.Schema(
+                type=openapi.TYPE_ARRAY,
+                items=openapi.Schema(type=openapi.TYPE_STRING),
+                description='List of image filenames matching the query'
+            )
+        }
+    )
+)
+
+# Dataset Management schemas
+dataset_status_response = openapi.Response(
+    'Dataset status',
+    schema=openapi.Schema(
+        type=openapi.TYPE_OBJECT,
+        properties={
+            'status': openapi.Schema(type=openapi.TYPE_STRING),
+            'exists': openapi.Schema(type=openapi.TYPE_BOOLEAN),
+            'image_count': openapi.Schema(type=openapi.TYPE_INTEGER),
+            'data_path': openapi.Schema(type=openapi.TYPE_STRING)
+        }
+    )
+)
+
+# Image File schemas
+image_file_parameters = [
+    openapi.Parameter(
+        'filename',
+        openapi.IN_PATH,
+        description='Name of the image file to retrieve',
+        type=openapi.TYPE_STRING,
+        required=True
+    )
+]
+
 urlpatterns = [
     path('docs/', schema_view.with_ui('swagger',
          cache_timeout=0), name='schema-swagger-ui'),

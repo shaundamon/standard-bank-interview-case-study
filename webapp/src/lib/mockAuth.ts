@@ -1,36 +1,34 @@
 import { User } from '../types';
 
 class MockAuthService {
-    private storageKey = 'mock_auth_user';
+    private user: User | null = null;
 
-    async signUp(email: string) {
-        const user: User = {
+    async signInWithPassword({ email, password }: { email: string; password: string }) {
+        // For demo purposes, accept any password
+        this.user = {
             id: crypto.randomUUID(),
             email,
             created_at: new Date().toISOString(),
         };
-        localStorage.setItem(this.storageKey, JSON.stringify(user));
-        return { error: null };
+        return { data: { user: this.user }, error: null };
     }
 
-    async signInWithPassword(email: string) {
-        const user: User = {
+    async signUp({ email, password }: { email: string; password: string }) {
+        this.user = {
             id: crypto.randomUUID(),
             email,
             created_at: new Date().toISOString(),
         };
-        localStorage.setItem(this.storageKey, JSON.stringify(user));
-        return { data: { user }, error: null };
+        return { data: { user: this.user }, error: null };
     }
 
     async signOut() {
-        localStorage.removeItem(this.storageKey);
+        this.user = null;
         return { error: null };
     }
 
     getUser() {
-        const userData = localStorage.getItem(this.storageKey);
-        return userData ? JSON.parse(userData) : null;
+        return { data: { user: this.user }, error: null };
     }
 }
 

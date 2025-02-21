@@ -5,7 +5,7 @@ from pathlib import Path
 from typing import List, Dict
 import logging
 
-from ml.data.dataset import DatasetManager
+from v1.ml.dataset_handler.dataset import DatasetManager
 import torch
 
 logger = logging.getLogger(__name__)

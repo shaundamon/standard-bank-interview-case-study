@@ -34,7 +34,7 @@ export const useSpeechSynthesis = () => {
         utterance.voice = englishVoice;
       }
 
-      // Add event handlers
+      // event handlers
       utterance.onstart = () => setSpeaking(true);
       utterance.onend = () => setSpeaking(false);
       utterance.onerror = () => setSpeaking(false);
