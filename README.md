@@ -64,7 +64,7 @@ The application will automatically:
 - Start the frontend development server
 - Check for the required dataset
 - Download the dataset if not present
-No additional setup is required - just wait for the initial dataset download to complete before using the search functionality.
+No additional setup is required - just wait for the initial dataset download to complete before using the search functionality.(when the django server is started - data would have been downloaded, double check by going to the data tab)
 
 5. Access the application:
 - Frontend: http://localhost:5173

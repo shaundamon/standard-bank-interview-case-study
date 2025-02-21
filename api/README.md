@@ -73,8 +73,8 @@ Data is automatically stored in a Docker volume at `/app/data`
 
 ### Local Setup
 By default, data is stored in:
-- Windows: `C:\Users\<username>\.imageai\data`
-- Linux/Mac: `~/.imageai/data`
+- Windows: `./data`
+- Linux/Mac: `./data`
 
 You can override this by setting `DATA_PATH` in your `.env` file:
 
@@ -84,8 +84,8 @@ DATA_PATH=/custom/path/to/data
 
 If you prefer to download manually instead:
 - Download from [AI vs Human Generated Dataset](https://www.kaggle.com/datasets/alessandrasala79/ai-vs-human-generated-dataset/data?select=test_data_v2)
-- Extract to `api/data/dataset/`
-- Update your `.env`: `DATASET_PATH=api/data/dataset`
+- Extract to `api/data/`
+- Update your `.env`: `DATASET_PATH=api/data/`
 
 
 3. Run migrations:
